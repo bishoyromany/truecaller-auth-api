@@ -3,16 +3,23 @@ import mongoose from "mongoose";
 const AuthAttemptSchema = new mongoose.Schema(
   {
     phoneNumber: {
-      type: String,
+      type: Number,
       required: true,
     },
-    key: {
+    requestId: {
       type: String,
       required: true,
     },
     isUsed: {
       type: Boolean,
       required: true,
+      default: false,
+    },
+    body: {
+      type: Object,
+    },
+    user: {
+      type: Object,
     },
   },
   {

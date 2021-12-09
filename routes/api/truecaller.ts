@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
-const models = require("./../../models");
+const models: { User: any; AuthAttempt: any } = require("./../../models");
 
 /**
  * Test API
@@ -11,7 +11,7 @@ router.get("/", (req: any, res: any) => {
 });
 
 /**
- * Auth URL
+ * Auth Call Back URL
  */
 router.post("/auth", async (req: any, res: any) => {
   console.log(req.query, req.body);
@@ -21,6 +21,9 @@ router.post("/auth", async (req: any, res: any) => {
     res.json({ message: "Verification Failed" });
   }
 
+  /**
+   * Get User Info
+   */
   const response = await axios.get(endpoint, {
     headers: {
       Authorization: "Bearer " + accessToken,
@@ -33,15 +36,19 @@ router.post("/auth", async (req: any, res: any) => {
     res.json({ message: "Unauthorized" });
   }
 
-  console.log(data);
+  /**
+   * Store User Auth Attempt Information
+   */
+  const saveData = {
+    body: req.body,
+    user: data,
+    requestId,
+    isUsed: false,
+    phoneNumber: data?.phoneNumbers[0],
+  };
 
-  // .then((r: any) => {
-  //   console.log(r.data);
-  //   res.json({ message: "Verification Success" });
-  // })
-  // .catch((e: any) => {
-  //   res.json({ message: "Verification Failed" });
-  // });
+  const AuthAttempt = await models.AuthAttempt.create(saveData);
+  res.json(AuthAttempt);
 });
 
 module.exports = router;
