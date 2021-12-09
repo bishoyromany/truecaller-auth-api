@@ -3,6 +3,7 @@ const protection = require("./middlewares/protection");
 const app = express();
 const PORT = process.env.PORT || 8000;
 require("dotenv").config();
+const db = require("./db");
 
 app.use(protection);
 
@@ -13,5 +14,8 @@ app.use(express.urlencoded({ extended: false }));
 // truecaller api routes
 app.use(`/api/truecaller`, require("./routes/api/truecaller"));
 
-app.get("/", (req, res) => res.send("Express + TypeScript Server"));
+app.get("/", (req, res) => res.send("True Caller Authenticate Server"));
+
+db.connect(process.env.DATABASE);
+
 app.listen(PORT);
