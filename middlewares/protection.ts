@@ -1,5 +1,7 @@
 const logger = (req: any, res: any, next: any): void => {
-  console.log(`${req.protocol}://${req.get("host")}${req.originalUrl}`);
+  if (req.query.token !== process.env.API_KEY) {
+    return res.json({ message: "Token inválid" });
+  }
   next();
 };
 
