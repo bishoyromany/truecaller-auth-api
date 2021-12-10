@@ -12,11 +12,14 @@ router.get("/", (req: any, res: any) => {
     usefulURLs: {
       auth: {
         url:
-          "https://" + req.headers.host + "/auth?token=" + process.env.API_KEY,
+          "https://" +
+          req.headers.host +
+          "/api/truecaller/auth?token=" +
+          process.env.API_KEY,
         method: "POST",
       },
       user: {
-        url: "https://" + req.headers.host + "/user/:requestId",
+        url: "https://" + req.headers.host + "/api/truecaller/user/:requestId",
         method: "GET",
       },
       truecallerDev: "https://developer.truecaller.com/",
