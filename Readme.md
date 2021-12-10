@@ -11,7 +11,9 @@
 
 ### API Routes
 
-**_Make Sure To Pass token [aka API KEY]_**
+1. /api/truecaller/auth?token=API_KEY -> Authenticate the user for truecaller callback.
+2. /api/truecaller/user/:requestId -> Get the user information using request id.
 
-1. /api/truecaller/auth -> Authenticate the user for truecaller callback.
-2. /api/truecaller/user -> Get the user information using request id.
+### Notes
+
+**API KEY** Is Required For _/api/truecaller/auth_ Route, To Allow Truecaller On To Use The API.

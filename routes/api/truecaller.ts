@@ -7,18 +7,32 @@ const models: { User: any; AuthAttempt: any } = require("./../../models");
  * Test API
  */
 router.get("/", (req: any, res: any) => {
-  res.json({ message: "API Is Working Fine" });
+  res.json({
+    message: "Truecaller API Is Working Fine",
+    usefulURLs: {
+      auth: {
+        url:
+          "https://" + req.headers.host + "/auth?token=" + process.env.API_KEY,
+        method: "POST",
+      },
+      user: {
+        url: "https://" + req.headers.host + "/user/:requestId",
+        method: "GET",
+      },
+      truecallerDev: "https://developer.truecaller.com/",
+      apiRepo: "https://github.com/bishoyromany/truecaller-auth-api",
+    },
+  });
 });
 
 /**
  * Auth Call Back URL
  */
 router.post("/auth", async (req: any, res: any) => {
-  console.log(req.query, req.body);
   const { requestId, accessToken, endpoint } = req.body;
 
   if (!requestId || !accessToken || !endpoint) {
-    res.json({ message: "Verification Failed" });
+    return res.json({ message: "Verification Failed" });
   }
 
   /**
@@ -33,7 +47,7 @@ router.post("/auth", async (req: any, res: any) => {
   const { status, data } = response;
 
   if (status !== 200) {
-    res.json({ message: "Unauthorized" });
+    return res.json({ message: "Unauthorized" });
   }
 
   /**
@@ -48,7 +62,45 @@ router.post("/auth", async (req: any, res: any) => {
   };
 
   const AuthAttempt = await models.AuthAttempt.create(saveData);
-  res.json(AuthAttempt);
+  res.status(201).json(AuthAttempt);
+});
+
+/**
+ * Get User Info
+ */
+router.get("/user/:requestId", async (req: any, res: any) => {
+  const { requestId } = req.params;
+
+  /**
+   * Get Login Attempt Information
+   */
+  const AuthAttempt = await models.AuthAttempt.findOne({
+    requestId,
+    isUsed: false,
+  });
+
+  /**
+   * Mark Attempt As Used If Found Esle Return Unauthorized
+   */
+  if (AuthAttempt) {
+    AuthAttempt.isUsed = true;
+    AuthAttempt.save();
+  } else {
+    return res.status(400).json({ message: "Verification Failed" });
+  }
+
+  /** Get User Information Using Phone Number */
+  const { phoneNumber } = AuthAttempt;
+  const user = await models.User.findOne({
+    phoneNumber: "+" + phoneNumber,
+  });
+
+  /** User Not Found */
+  if (!user) {
+    return res.status(404).json({ message: "User Not Found" });
+  }
+
+  res.status(200).json(user);
 });
 
 module.exports = router;

@@ -14,7 +14,7 @@ app.use(express.urlencoded({ extended: false }));
 // truecaller api routes
 app.use(`/api/truecaller`, require("./routes/api/truecaller"));
 
-app.get("/", (req, res) => res.send("True Caller Authenticate Server"));
+app.get("/", (req, res) => res.send("True Caller Authentication Server"));
 
 db.connect(process.env.DATABASE);
 
